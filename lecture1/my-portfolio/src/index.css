@@ -1,0 +1,66 @@
+/* CSS 초기화 */
+* {
+  box-sizing: border-box;
+}
+
+/* HTML, Body 초기화 */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Root 앱 컨테이너 설정 */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 컬러 팔레트 CSS 변수 */
+:root {
+  /* Primary Colors */
+  --color-primary: #0071E3;
+  --color-primary-light: #2997FF;
+  --color-primary-dark: #0055B3;
+
+  /* Secondary Colors */
+  --color-secondary: #F5F5F7;
+  --color-accent: #FF2D55;
+
+  /* Background Colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F5F7;
+
+  /* Text Colors */
+  --color-text-primary: #1D1D1F;
+  --color-text-secondary: #6E6E73;
+  --color-text-muted: #86868B;
+
+  /* Interactive Colors */
+  --color-button-primary: #0071E3;
+  --color-button-hover: #0077ED;
+  --color-link: #0066CC;
+  --color-link-hover: #0071E3;
+
+  /* Border Colors */
+  --color-border: #D2D2D7;
+  --color-border-light: #E8E8ED;
+
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
