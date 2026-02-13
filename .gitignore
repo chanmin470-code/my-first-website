@@ -1,13 +1,32 @@
-# 개인 정보 / 민감한 파일
-내정보.txt
+# MCP 설정 파일
 .mcp.json
+
+# Claude 로컬 설정
 .claude/
 
-# 로그 파일
-logs/
-
-# Node.js
+# Node.js 관련
 node_modules/
+package-lock.json
+
+# 캐시 파일
+.cache/
+.vite/
 dist/
+
+# 환경 변수
 .env
 .env.local
+.env.*.local
+
+# OS/IDE 파일
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 로그 파일
+*.log
+npm-debug.log*
+
+# 개인 정보 / 민감한 파일
+내정보.txt
