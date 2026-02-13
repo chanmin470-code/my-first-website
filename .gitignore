@@ -1,0 +1,13 @@
+# 개인 정보 / 민감한 파일
+내정보.txt
+.mcp.json
+.claude/
+
+# 로그 파일
+logs/
+
+# Node.js
+node_modules/
+dist/
+.env
+.env.local
