@@ -160,18 +160,6 @@ function GuestbookForm({ onSubmitted }) {
         />
       </Box>
 
-      <TextField
-        label='메시지 *'
-        value={ form.content }
-        onChange={ handleChange('content') }
-        required
-        fullWidth
-        multiline
-        rows={ 3 }
-        size='small'
-        sx={ { mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 2 } } }
-      />
-
       {/* 선택 정보 */}
       <Typography variant='caption' sx={ { color: '#86868B', display: 'block', mb: 1.5 } }>
         선택 정보 (입력하지 않아도 됩니다)
@@ -210,6 +198,18 @@ function GuestbookForm({ onSubmitted }) {
           sx={ { '& .MuiOutlinedInput-root': { borderRadius: 2 } } }
         />
       </Box>
+
+      {/* 메시지 - 제일 아래 큰 입력란 */}
+      <TextField
+        label='메시지 *'
+        value={ form.content }
+        onChange={ handleChange('content') }
+        required
+        fullWidth
+        multiline
+        rows={ 6 }
+        sx={ { mb: 2.5, '& .MuiOutlinedInput-root': { borderRadius: 2 } } }
+      />
 
       <Button
         type='submit'
