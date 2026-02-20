@@ -211,6 +211,7 @@ function GuestbookForm({ onSubmitted }) {
         sx={ { mb: 2.5, '& .MuiOutlinedInput-root': { borderRadius: 2 } } }
       />
 
+      <Box sx={ { display: 'flex', justifyContent: 'center' } }>
       <Button
         type='submit'
         variant='contained'
@@ -225,6 +226,7 @@ function GuestbookForm({ onSubmitted }) {
       >
         {isSuccess ? '등록 완료! 🎉' : isSubmitting ? '등록 중...' : '방명록 등록'}
       </Button>
+      </Box>
     </Box>
   );
 }
