@@ -50,6 +50,18 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_UNSPLASH_ACCESS_KEY: ${{ secrets.VITE_UNSPLASH_ACCESS_KEY }}
 
+      # ── my-community 빌드 ────────────────────────
+      - name: Install my-community dependencies
+        run: npm install
+        working-directory: lecture1/my-community
+
+      - name: Build my-community
+        run: npm run build
+        working-directory: lecture1/my-community
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
       # ── 결합 ─────────────────────────────────────
       - name: Combine build outputs
         run: |
@@ -57,6 +69,8 @@ jobs:
           cp -r lecture1/my-portfolio/dist/. combined/
           mkdir -p combined/sns
           cp -r lecture1/mini_sns/dist/. combined/sns/
+          mkdir -p combined/community
+          cp -r lecture1/my-community/dist/. combined/community/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
