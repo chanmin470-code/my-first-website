@@ -25,18 +25,36 @@ function HomePage() {
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
+      // 1단계: 게시글 목록 가져오기
+      const { data: postsData, error } = await supabase
         .from('sns_posts')
-        .select('*, sns_users(id, username, display_name, avatar_url)')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPosts(data || []);
-
-      if (data && data.length > 0) {
-        await fetchCommentCounts(data.map((p) => p.id));
-        await fetchLikedPosts(data.map((p) => p.id));
+      if (!postsData || postsData.length === 0) {
+        setPosts([]);
+        return;
       }
+
+      // 2단계: 작성자 정보 별도 쿼리 (PostgREST 관계 캐시 의존 방지)
+      const userIds = [...new Set(postsData.map((p) => p.user_id))];
+      const { data: usersData } = await supabase
+        .from('sns_users')
+        .select('id, username, display_name, avatar_url')
+        .in('id', userIds);
+
+      const usersMap = {};
+      usersData?.forEach((u) => { usersMap[u.id] = u; });
+
+      const postsWithUsers = postsData.map((p) => ({
+        ...p,
+        sns_users: usersMap[p.user_id] || null,
+      }));
+
+      setPosts(postsWithUsers);
+      await fetchCommentCounts(postsData.map((p) => p.id));
+      await fetchLikedPosts(postsData.map((p) => p.id));
     } catch (err) {
       console.error('피드 로드 오류:', err);
     } finally {

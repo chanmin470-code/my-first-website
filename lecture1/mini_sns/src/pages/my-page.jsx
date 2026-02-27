@@ -47,10 +47,16 @@ function MyPage() {
     fetchMyPosts();
   }, [user]);
 
+  // user가 null이 되면 (로그아웃 후) 로그인 페이지로 이동
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+    }
+  }, [user]);
+
   const handleLogout = async () => {
     try {
       await logout();
-      // 로그아웃 후 user가 null이 되면 ProtectedRoute가 자동으로 /login으로 이동
     } catch (err) {
       console.error('로그아웃 오류:', err);
     }
