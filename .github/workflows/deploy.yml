@@ -1,4 +1,4 @@
-name: Deploy React to GitHub Pages
+name: Deploy mini_sns to GitHub Pages
 
 on:
   push:
@@ -27,14 +27,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: lecture1/my-portfolio
+        working-directory: lecture1/mini_sns
 
       - name: Build
         run: npm run build
-        working-directory: lecture1/my-portfolio
+        working-directory: lecture1/mini_sns
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_UNSPLASH_ACCESS_KEY: ${{ secrets.VITE_UNSPLASH_ACCESS_KEY }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -42,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'lecture1/my-portfolio/dist'
+          path: 'lecture1/mini_sns/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
