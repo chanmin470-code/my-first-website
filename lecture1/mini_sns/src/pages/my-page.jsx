@@ -48,8 +48,12 @@ function MyPage() {
   }, [user]);
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+    try {
+      await logout();
+      // 로그아웃 후 user가 null이 되면 ProtectedRoute가 자동으로 /login으로 이동
+    } catch (err) {
+      console.error('로그아웃 오류:', err);
+    }
   };
 
   return (

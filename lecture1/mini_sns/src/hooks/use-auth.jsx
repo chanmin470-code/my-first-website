@@ -92,17 +92,7 @@ export function AuthProvider({ children }) {
       },
     });
     if (error) throw error;
-
-    // 세션이 있으면 즉시 프로필 생성 (이메일 인증 비활성화 상태)
-    if (data.session) {
-      const { error: profileError } = await supabase.from('sns_users').insert({
-        id: data.user.id,
-        username,
-        display_name: displayName,
-      });
-      if (profileError) throw profileError;
-    }
-
+    // 프로필은 handle_new_user DB 트리거가 자동 생성하므로 별도 INSERT 불필요
     return data;
   };
 
