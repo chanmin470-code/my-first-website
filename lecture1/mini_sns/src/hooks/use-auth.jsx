@@ -17,12 +17,28 @@ export function AuthProvider({ children }) {
 
   const loadProfile = async (userId) => {
     try {
-      const { data } = await supabase
+      const { data: existingProfile } = await supabase
         .from('sns_users')
         .select('*')
         .eq('id', userId)
         .single();
-      setProfile(data);
+
+      if (existingProfile) {
+        setProfile(existingProfile);
+        return;
+      }
+
+      // 프로필 없으면 auth 메타데이터로 자동 생성 (이메일 인증 후 첫 로그인 시)
+      const { data: { user } } = await supabase.auth.getUser();
+      const meta = user?.user_metadata;
+      if (meta?.username) {
+        const { data: newProfile } = await supabase
+          .from('sns_users')
+          .insert({ id: userId, username: meta.username, display_name: meta.display_name || meta.username })
+          .select()
+          .single();
+        setProfile(newProfile);
+      }
     } catch (err) {
       console.error('프로필 로드 오류:', err);
     } finally {
@@ -57,15 +73,24 @@ export function AuthProvider({ children }) {
 
   /** 회원가입 */
   const register = async ({ email, password, username, displayName }) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { username, display_name: displayName },
+      },
+    });
     if (error) throw error;
 
-    const { error: profileError } = await supabase.from('sns_users').insert({
-      id: data.user.id,
-      username,
-      display_name: displayName,
-    });
-    if (profileError) throw profileError;
+    // 세션이 있으면 즉시 프로필 생성 (이메일 인증 비활성화 상태)
+    if (data.session) {
+      const { error: profileError } = await supabase.from('sns_users').insert({
+        id: data.user.id,
+        username,
+        display_name: displayName,
+      });
+      if (profileError) throw profileError;
+    }
 
     return data;
   };

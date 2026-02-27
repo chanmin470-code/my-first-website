@@ -68,7 +68,32 @@ CREATE POLICY "공개 읽기" ON sns_likes FOR SELECT USING (true);
 CREATE POLICY "인증 사용자 좋아요" ON sns_likes FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "본인만 취소" ON sns_likes FOR DELETE USING (auth.uid() = user_id);
 
--- likes_count 자동 업데이트 함수
+-- =============================================
+-- 회원가입 시 sns_users 자동 생성 트리거
+-- (이메일 인증 여부와 관계없이 동작)
+-- =============================================
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.sns_users (id, username, display_name)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_on_auth_user_created ON auth.users;
+CREATE TRIGGER trigger_on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- =============================================
+-- likes_count 자동 업데이트 트리거
+-- =============================================
 CREATE OR REPLACE FUNCTION update_likes_count()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -81,7 +106,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- likes_count 트리거
 DROP TRIGGER IF EXISTS trigger_update_likes_count ON sns_likes;
 CREATE TRIGGER trigger_update_likes_count
 AFTER INSERT OR DELETE ON sns_likes
