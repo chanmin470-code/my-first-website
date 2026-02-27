@@ -47,15 +47,16 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    // 5초 안에 응답 없으면 강제로 로딩 해제
+    // 세션/프로필 로딩 전체에 대한 안전장치 타이머 (취소하지 않음)
     const fallbackTimer = setTimeout(() => setLoading(false), 5000);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      clearTimeout(fallbackTimer);
       setUser(session?.user ?? null);
       if (session?.user) {
+        // 타이머를 취소하지 않음 - loadProfile이 멈출 경우 타이머가 동작
         loadProfile(session.user.id);
       } else {
+        clearTimeout(fallbackTimer);
         setLoading(false);
       }
     }).catch(() => {
