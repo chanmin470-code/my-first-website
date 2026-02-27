@@ -47,13 +47,20 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    // 5초 안에 응답 없으면 강제로 로딩 해제
+    const fallbackTimer = setTimeout(() => setLoading(false), 5000);
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(fallbackTimer);
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
       } else {
         setLoading(false);
       }
+    }).catch(() => {
+      clearTimeout(fallbackTimer);
+      setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -68,7 +75,10 @@ export function AuthProvider({ children }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(fallbackTimer);
+      subscription.unsubscribe();
+    };
   }, []);
 
   /** 회원가입 */
