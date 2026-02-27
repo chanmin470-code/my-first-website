@@ -1,4 +1,4 @@
-name: Deploy mini_sns to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -25,11 +25,24 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      # ── 포트폴리오 빌드 ──────────────────────────
+      - name: Install portfolio dependencies
+        run: npm install
+        working-directory: lecture1/my-portfolio
+
+      - name: Build portfolio
+        run: npm run build
+        working-directory: lecture1/my-portfolio
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      # ── mini_sns 빌드 ────────────────────────────
+      - name: Install mini_sns dependencies
         run: npm install
         working-directory: lecture1/mini_sns
 
-      - name: Build
+      - name: Build mini_sns
         run: npm run build
         working-directory: lecture1/mini_sns
         env:
@@ -37,13 +50,21 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_UNSPLASH_ACCESS_KEY: ${{ secrets.VITE_UNSPLASH_ACCESS_KEY }}
 
+      # ── 결합 ─────────────────────────────────────
+      - name: Combine build outputs
+        run: |
+          mkdir -p combined
+          cp -r lecture1/my-portfolio/dist/. combined/
+          mkdir -p combined/sns
+          cp -r lecture1/mini_sns/dist/. combined/sns/
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'lecture1/mini_sns/dist'
+          path: 'combined'
 
       - name: Deploy to GitHub Pages
         id: deployment
